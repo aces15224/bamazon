@@ -38,7 +38,7 @@ inquirer.prompt([
           return true;
         }
         return false;
-      }
+      } 
     },
     {
       type: "input",
@@ -49,11 +49,9 @@ inquirer.prompt([
           return true;
         }
         return false;
-      }
-    }
-  
-  // After the prompt, store the user's response in a variable called location.
-  ]).then(function(answer) {
+      }}
+
+]).then(function(answer) {
       answerObject={
       item_Id: answer.inputID,
       item_Quantity: answer.inputQuantity
@@ -71,13 +69,10 @@ inquirer.prompt([
     else if(answerObject.item_Id==res[i].item_id && answerObject.item_Quantity>res[i].stock_quantity){
     console.log("Insufficient Quantity!")
     }
-     
-    }
+ }
     
    showCase(); 
-  });
-  // console.log("Invalid Product ID");
-  
+  });  
 }
 
 

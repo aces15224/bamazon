@@ -1,8 +1,6 @@
 
 var inquirer=require("inquirer");
 var mysql = require("mysql");
-var answerObject="";
-
 var connection = mysql.createConnection({
   host: "localhost",
   port: 3306,
@@ -28,7 +26,6 @@ inquirer.prompt([
     }
     
   
-  // After the prompt, store the user's response in a variable called location.
   ]).then(function(answer) {
    switch(answer.manageInventory){
     case "View Products for Sale":
@@ -44,9 +41,7 @@ inquirer.prompt([
         break;
 
     case "Add New Product":
-        // addProduct();
-        console.log("YES")
-
+        addProduct();
         break;
 
    }
@@ -81,36 +76,73 @@ function addInventory(){
         {
           type: "input",
           name: "inputID",
-          message: "What is the ID of the product you would like to manage?",
+          message: "What is the ID of the product you would like to add?",
           validate: function(value) {
             if (isNaN(value) === false) {
               return true;
             }
               return false;
           }
+        },
+        {
+          type: "input",
+          name: "quantityID",
+          message: "How many units would you like to add?",
+          validate: function(value) {
+            if (isNaN(value) === false) {
+              return true;
+            }
+              return false;
+          }
+
         }
     ]).then(function(answer) {
-        // connection.query("SELECT * from bamazon_db.products" , function(err, res) {
-        // for(let i=0; i<res.length; i++){
-
-        // }
-        // });
-        // var answerObject={
-        //     itemID:answer.inputID
-        // }
-        console.log(answerObject)
-        connection.query("SELECT * from bamazon_db.products WHERE item_id=" + answer.inputID, function(err, res) {
-            for(let i=0; i<res.length; i++){
-                console.log(res[i])
-            }
-    // //    connection.query("INSERT INTO bamazon_db.products.stock_quantity WHERE stock_quantity<10", function(err, res) {
-
-    });
+      connection.query("SELECT * FROM bamazon_db.products WHERE item_id="+ answer.inputID, function(err, res) {
+        for(let i=0; i<res.length; i++){
+          answer.quantityID=parseInt(answer.quantityID)+ parseInt(res[i].stock_quantity);       
+          connection.query("UPDATE bamazon_db.products SET stock_quantity="+ answer.quantityID +" WHERE item_id=" + answer.inputID, function(err, res) {
+            
+            viewInventory()
+      });
+        }
+  });
+    //       connection.query("UPDATE bamazon_db.products SET stock_quantity=" + newQuantity + "WHERE item_id="+ answer.inputID, function(err, res) {
+    //       viewInventory()
+    // });
 });
 }
 
-
-
+function addProduct(){
+  inquirer.prompt([
+    {
+    type: "input",
+    name: "addName",
+    message: "What would you like add?",
+    },
+    {
+    type: "input",
+    name: "addDepartment",
+    message: "In what department should it be listed ?",
+    },
+    {
+    type: "input",
+    name: "addPrice",
+    message: "How much does it cost?",
+    },
+    {
+    type: "input",
+    name: "addQuantity",
+    message: "How many units would you like add?",
+    },
+  ]).then(function(answer) {
+      answer.addPrice=parseInt(answer.addPrice)
+      answer.addQuantity=parseInt(answer.addQuantity)    
+      connection.query("INSERT INTO bamazon_db.products (product_name, department_name, price, stock_quantity) VALUES ('"+
+      answer.addName +"','" + answer.addDepartment +"',"+ answer.addPrice + "," + answer.addQuantity + ")", function(err, res) {
+        viewInventory()
+  });
+});
+}
 
 
   
